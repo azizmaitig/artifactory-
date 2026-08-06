@@ -15,6 +15,8 @@ A vault-native artifact-builder flow — wayfinder-style decision map + skills �
 
 <!-- the index — one line per closed ticket: enough to judge relevance, then zoom the link for the detail the ticket holds -->
 
+- [Mine artifact-generation prompts](issues/01-mine-artifact-prompts.md) — claude.ai's own prompts leaked (visualize.md + artifact skill pack); 10 rules for artifact quality extracted, incl. React whitelist, never-localStorage, color-encodes-meaning, interactive-over-static, tokens-not-hardcoded
+
 ## Not yet specified
 
 - Artifact corpus / regression standard — how "Claude-quality" is measured over time
