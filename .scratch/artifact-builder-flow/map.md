@@ -19,6 +19,7 @@ A vault-native artifact-builder flow — wayfinder-style decision map + skills �
 - [Mine artifact-generation prompts](issues/01-mine-artifact-prompts.md) — claude.ai's own prompts leaked (visualize.md + artifact skill pack); 10 rules for artifact quality extracted, incl. React whitelist, never-localStorage, color-encodes-meaning, interactive-over-static, tokens-not-hardcoded
 - [Artifact scope matrix](issues/02-artifact-scope-matrix.md) — v1 = JSX primary + first-class HTML fallback (interactive on demand); whitelist recharts/lucide-react/mathjs/papaparse, rest extended on-demand; out: multi-file apps, physics engines, persistence/networking, non-JSX/HTML formats, server-side. Research: why JSX — containment/sandbox, no-build-step, model fit, portability; Claude's own split (Claude Code = HTML-only, JSX doesn't stream)
 - [Domain-modeling gate](issues/03-domain-modeling-gate.md) — triggered gate (fires on briefs with a domain model, hard gate, skips pure-presentation); checks: research→explain→validate; outputs: worked example (load-bearing, known reference value) + assumptions (error-direction tagged) + confidence notes; lives in brief + JSX code comments, never in-UI
+- [Artifact design-taste layer](issues/04-artifact-design-taste-layer.md) — festival look = default artifact template (token block shared by JSX + HTML paths, per-brief palette freedom only); ADR-001 is the canonical record. Corpus evidence: community sims are vanilla HTML/JS, dark+mono taste, CDN libs real
 
 ## Not yet specified
 
