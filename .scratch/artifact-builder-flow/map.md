@@ -21,13 +21,13 @@ A vault-native artifact-builder flow — wayfinder-style decision map + skills �
 - [Domain-modeling gate](issues/03-domain-modeling-gate.md) — triggered gate (fires on briefs with a domain model, hard gate, skips pure-presentation); checks: research→explain→validate; outputs: worked example (load-bearing, known reference value) + assumptions (error-direction tagged) + confidence notes; lives in brief + JSX code comments, never in-UI
 - [Artifact design-taste layer](issues/04-artifact-design-taste-layer.md) — festival look = default artifact template (token block shared by JSX + HTML paths, per-brief palette freedom only); ADR-001 is the canonical record. Corpus evidence: community sims are vanilla HTML/JS, dark+mono taste, CDN libs real
 - [Package the build pipeline](issues/06-package-build-pipeline.md) — SHIPPED: build-artifact.mjs + build-artifact.ps1 (repo root). esbuild (NODE_ENV define in-script) + Tailwind v4 CLI → single verified HTML; entry-project dep resolution, npx-shim workaround, input.css-in-project; verified: festival rebuilt 610KB, renders clean in Playwright
+- [Flow orchestration shape](issues/07-flow-orchestration-shape.md) — Option B: single /artifact command, one session per artifact. Flow lives in one SKILL.md (8-gate sequence: brainstorm → format → domain-model → design → implement → verify → build → archive) + /artifact slash-command entry; HITL only at brainstorm/domain/verify. Format placement = gate #2 (rule → 08); verify strictness → 05. Build of the skill itself graduated to ticket 09.
 
 ## Not yet specified
 
 - Artifact corpus / regression standard — how "Claude-quality" is measured over time
-- Integration with existing skill stack — which existing skills get reused (visual-translator Step 0, excalidraw-writer palette, frontend skills) vs replaced
 - Preview workflow — how generated artifacts get opened/iterated (local server pattern from the viewer session?)
-- Creative-brief prompt layer — what the user prompt → artifact brief looks like
+- Creative-brief prompt layer — what the user prompt → artifact brief looks like (gate 1's output shape; token block already lives in this layer per ADR-001)
 
 ## Out of scope
 
