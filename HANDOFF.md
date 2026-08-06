@@ -20,7 +20,7 @@ A physics-based field attenuation simulator combining:
 - Dark theme + tabular-nums mono readouts
 - Single self-contained HTML build (esbuild + Tailwind CLI)
 
-**Example Artifact:** [festival-noise-sim.jsx](/attached)
+**Example Artifact:** festival-noise-sim.jsx (`C:\Users\azizm\Downloads\mon-festival\festival-noise-sim.jsx`)
 
 ---
 
