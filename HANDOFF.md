@@ -1,207 +1,59 @@
 # Artifact-Builder Wayfinder Flow — Session Handoff
 
-**Date:** 2026-08-06  
-**User:** azizmaitig  
-**Session Focus:** Artifact generation system design + reference implementation scoping
+**Date:** 2026-08-06 (updated after tickets 03/04/06)
+**User:** azizmaitig
+**Next mission:** Resolve **07 - Flow orchestration shape** (grilling, HITL) — one ticket per session.
 
 ---
 
-## Context
+## Where everything lives
 
-Building a **vault-native artifact-builder flow** — a wayfinder-style decision map + reusable skills that generates Claude-quality interactive artifacts on demand.
+- **Map (canonical):** `.scratch/artifact-builder-flow/map.md` — Destination, Notes, Decisions so far
+- **Tickets:** `.scratch/artifact-builder-flow/issues/NN-<name>.md` (local-markdown tracker)
+- **Research:** `.scratch/artifact-builder-flow/research/`
+- **ADR:** `docs/decisions/ADR-001-festival-design-language-template.md`
+- **Build pipeline (SHIPPED):** `build-artifact.mjs` + `build-artifact.ps1` (repo root)
+- **Repo:** https://github.com/azizmaitig/artifactory- (branch `main`)
 
-**Reference Implementation:** `festival-noise-sim.jsx`  
-A physics-based field attenuation simulator combining:
-- Domain modeling (spherical/cylindrical spreading, barrier diffraction, air absorption)
-- Interactive sliders + frequency band selector
-- Live SVG side-profile diagram
-- Recharts SPL-vs-distance graph
-- Readout pane with component breakdown
-- Dark theme + tabular-nums mono readouts
-- Single self-contained HTML build (esbuild + Tailwind CLI)
+## Resolved decisions (do not re-open)
 
-**Example Artifact:** festival-noise-sim.jsx (`C:\Users\azizm\Downloads\mon-festival\festival-noise-sim.jsx`)
+| Ticket | Decision |
+|---|---|
+| 01 Mine artifact prompts | 10 quality rules mined from claude.ai leaks (React whitelist, never-localStorage, color-encodes-meaning, interactive-over-static, tokens-not-hardcoded) |
+| 02 Artifact scope matrix | v1 = JSX primary + HTML fallback, interactive on demand; whitelist recharts/lucide-react/mathjs/papaparse, rest extended on-demand; out: multi-file, physics engines, persistence/networking, non-JSX/HTML formats, server-side |
+| 03 Domain-modeling gate | Triggered gate (fires on briefs with a domain model): research→explain→validate; outputs worked example (load-bearing) + assumptions + confidence notes; lives in brief + JSX comments, never in-UI |
+| 04 Design-taste layer | Festival look = default template (token block, per-brief palette freedom) — ADR-001 |
+| 06 Build pipeline | `build-artifact.mjs` → entry.jsx + deps → one verified HTML (esbuild + Tailwind v4 CLI, NODE_ENV define in-script, no Babel). Verified: festival rebuild 610KB, Playwright-clean |
 
----
+## Open tickets
 
-## Current State
+- **07 - Flow orchestration shape (NEXT, frontier):** How does a user request become an artifact? Option A: mini-wayfinder per artifact (destination → decision tickets → resolve → build). Option B: single /artifact command with embedded gates (brainstorm → domain-model → design → build → verify). Where does the flow live — skill, command, map?
+- **08 - Format selection rule (sibling):** JSX vs HTML choice rule; may be a gate in orchestration (07) or in the creative-brief layer
+- **05 - Verification gate:** unblocked since 06 resolved — what counts as "verified rendering" (headless render, screenshot, interaction smoke test, console-error-clean); minimum gate before ship, hooks into build-artifact pipeline
 
-### Destination (from map.md)
+## Inputs for ticket 07
 
-A complete artifact-generation system that:
-1. Takes user PRDs → generates interactive frontend artifacts
-2. Validates domain modeling (physics/logic is correct before shipping)
-3. Renders with distinctive design (dark theme, single accent color, interactive-over-static)
-4. Tests before deployment (Playwright QA, no untested logic)
-5. Outputs self-contained HTML + shared skill reusable artifacts
+- Copilot's draft 7-step pipeline in `research/02-copilot-repo-research.md` (spec interview → wireframe → React impl → domain validation → QA → build → deploy/archive) = a concrete Option B shape
+- Ticket 08's question: where the JSX/HTML format choice lives
+- Build contract from 06: entry.jsx → single verified HTML
+- Domain gate from 03: hard step when brief has a domain model
+- Token template from ADR-001: stamped on every artifact
 
-### Prior Work Captured
+## Conventions
 
-Reference artifact corpus mining (not in this session):
-- **Issue:** Mine artifact-generation prompts
-- **Source:** claude.ai's leaked prompts (visualize.md + artifact skill pack)
-- **Output:** 10 rules for artifact quality (React whitelist, no-localStorage, color-encodes-meaning, interactive-over-static, tokens-not-hardcoded)
+- Claim ticket first (`<!-- claimed ... -->`), resolve via `## Answer` section + `Status: resolved`, append line to map "Decisions so far"
+- Commit: `docs: resolve ticket NN - <name>` (English, SEMANTIC), push to `main`, NO attribution footers
+- PowerShell 5.1; git commands need `$env:GIT_MASTER='1';` prefix; no `sed` on PATH
+- User is terse/decisive ("ok" = locked). Recommend each option; one question at a time (grill-me skill)
 
-### Decisions Not Yet Made
+## Standing preferences
 
-- Artifact corpus / regression standard (how "Claude-quality" is measured)
-- Integration with existing skill stack (visual-translator, excalidraw-writer, frontend_aesthetics)
-- Preview workflow (how artifacts get opened/iterated locally)
-- Creative-brief prompt layer (user prompt → artifact brief conversion)
+Dark theme + single accent · tabular-nums mono readouts · verified before shipped · no untested logic · terse/pragmatic tone.
 
----
+## Guardrail (user's correction this session)
 
-## Relevant Repository References
+The TARGET is producing artifacts like festival-noise-sim (physics + sliders + SVG + recharts, dark, self-contained HTML). Keep grilling concrete and artifact-facing — avoid meta-questions about where things live in the flow. When design decisions are locked, move to building.
 
-**Repo Overview:** Searched starred repos for patterns relevant to artifact generation + workflow orchestration. Key findings:
+## Suggested skills for next session
 
-### Tier 1: Direct Reuse (Skill Generation + QA Pipeline)
-
-1. **Graphify-Labs/graphify** — Multi-platform skill artifact generation
-   - Pattern: `RenderedArtifact` dataclass + platform abstraction (platforms.toml → fragments → markdown artifacts)
-   - Test: Byte-idempotence checks, drift guards for committed artifacts
-   - **Reusable:** Template composition, linting pipeline for generated code
-   - *Docs:* `graphify/tools/skillgen/gen.py` (RenderedArtifact + render_all orchestration)
-
-2. **microsoft/conductor** — Multi-agent workflow orchestration
-   - Pattern: Agent composition for progressive pipeline (visual → validation → ship)
-   - Post-processing: `conductor/executor/linkify.py` (markdown-aware text processing, protection of code blocks)
-   - **Reusable:** Agent-to-agent handoff, gate-prompt rendering
-   - *Docs:* `src/conductor/executor/linkify.py` (fenced-code-aware auto-linkification model for QA gates)
-
-3. **microsoft/SkillOpt** — Trajectory-driven skill optimization
-   - Pattern: Train reusable skills via edit trajectories + gating validation
-   - **Reusable:** Best-skill extraction, validation gates
-   - *Purpose:* Validates that skills converge on high-quality outputs
-
-### Tier 2: Domain / Interactive Validation
-
-4. **repowise-dev/repowise** — Codebase intelligence (MCP-based)
-   - **Overlap:** HITL domain-modeling layer; validates that artifacts' logic aligns with codebase context
-
-5. **xyflow/xyflow** — React Flow (node-based UIs)
-   - **Overlap:** Reference for interactive rendering patterns (festival-noise-sim is interactive; this library excels at that category)
-
-6. **abhigyanpatwari/GitNexus** — Client-side knowledge graphs (zero-server)
-   - **Overlap:** Artifact preview runs locally; this pattern validates self-contained paradigm
-
----
-
-## Suggested Skills for Next Agent
-
-Invoke these in order when continuing artifact-builder work:
-
-### 1. **visual-translator** (Brainstorm + Artifact Brief)
-   - **When:** Converting user PRD → artifact design spec
-   - **Output:** Structured brief (domain, UI components, interactivity model, color scheme)
-   - **Reference:** Noted in map.md as "Step-0 brainstorm"
-
-### 2. **excalidraw-writer** (Wireframe + Palette)
-   - **When:** Drafting visual mockup of artifact layout
-   - **Output:** SVG wireframe + color palette JSON
-   - **Standing Preference:** Dark theme + single accent color (e.g., #3FD8C4 from festival-noise-sim)
-
-### 3. **frontend_aesthetics** (Design Validation)
-   - **When:** After React JSX is drafted
-   - **Reference:** Anthropic blog (Nov 2025) + festival-noise-sim precedent
-   - **Output:** Design critique (spacing, typography, color contrast, interactive feedback)
-
-### 4. **domain-modeling** (Physics/Logic HITL)
-   - **When:** Validating that the artifact's domain logic is sound
-   - **Input:** User-provided spec + reference docs
-   - **Output:** Corrected equations/algorithms (e.g., barrier diffraction validation)
-   - **Note:** Interactive grill-me pattern for question-answer loops
-
-### 5. **playwright-qa** / **webapp-testing** (Artifact Verification)
-   - **When:** After artifact renders locally
-   - **Scope:** Validate interactive behaviors (slider feedback, graph re-renders, SVG updates)
-   - **Output:** Test report + video capture (optional)
-
-### 6. **esbuild + tailwind-cli** (Build Pipeline)
-   - **When:** Final packaging to self-contained HTML
-   - **Reference:** Working build from festival-noise-sim session
-   - **Key Fix:** `NODE_ENV=production` define (minification + dead-code elimination)
-
----
-
-## Standing Preferences (From map.md)
-
-- **Tone:** Terse, pragmatic
-- **Theme:** Dark mode + single accent color (mint #3FD8C4 preferred; validate per spec)
-- **Numbers:** Tabular-nums monospace readouts (e.g., `font-mono` + `tabular-nums`)
-- **Logic:** Verified before shipped (no untested domain models; Playwright-validated interactivity)
-- **Scope:** Interactive frontend artifacts only (simulations, data-viz, tools)
-- **Build:** Single self-contained HTML file (no SPA or bundler artifacts exposed to user)
-
----
-
-## Workflow Outline (Next Steps)
-
-1. **Spec Interview** (visual-translator)
-   - User provides PRD or problem statement
-   - Brainstorm → artifact brief (domain, components, interactivity)
-
-2. **Wireframe + Design** (excalidraw-writer → frontend_aesthetics)
-   - Visual mockup + palette
-   - Design review loop
-
-3. **React Implementation** (frontend_aesthetics)
-   - JSX with Tailwind + Recharts / SVG
-   - Pass to domain-modeling if physics/logic required
-
-4. **Domain Validation** (domain-modeling)
-   - Verify correctness of algorithms (math/physics review)
-   - HITL loops if edge cases exist
-
-5. **QA + Playwright** (webapp-testing)
-   - Interactive behavior validation
-   - Slider feedback, chart re-renders, SVG responsiveness
-
-6. **Build & Package** (esbuild + tailwind-cli)
-   - Minify → single HTML
-   - Verify NODE_ENV define is set
-
-7. **Deploy & Archive**
-   - Save to user's artifacts vault
-   - Tag with version + domain (e.g., `artifact-v1-acoustics.html`)
-
----
-
-## Key Files & References
-
-| Item | Link | Purpose |
-|------|------|---------|
-| Example Artifact | festival-noise-sim.jsx | React component + physics model |
-| Skill Gen Model | https://github.com/Graphify-Labs/graphify/blob/main/tools/skillgen/gen.py | RenderedArtifact pattern + idempotence |
-| QA Gate Pattern | https://github.com/microsoft/conductor/blob/main/src/conductor/executor/linkify.py | Post-processing validation (code-block aware) |
-| Skill Optimization | https://github.com/microsoft/SkillOpt | Trajectory-driven reuse + gating |
-| Wayfinder Map | map.md (in conversation context) | Decisions + out-of-scope |
-
----
-
-## Out of Scope (Explicit Non-Goals)
-
-- Running artifacts inside claude.ai platform itself (Anthropic's infrastructure)
-- General-purpose app framework (artifacts only, not SPA builder)
-- Festival soundproofing physics problem itself (was the example, not the goal)
-
----
-
-## Notes for Continuity
-
-- **Starred repos:** User has curated collection of 30+ repos. Many are skill-generation, workflow orchestration, and data-viz libraries. Check those if new tool patterns are needed.
-- **User's own projects:** Starred repo includes user's `Electricity-monitoring` (PZEM004t sensor + Grafana/node-RED/InfluxDB/MQTT) — may inform domain-modeling patterns for future artifacts.
-- **No sensitive data:** No API keys, credentials, or PII in conversation.
-- **Local workspace:** User's Obsidian vault at `D:\projects\obsidian\second brain\artifact-builder` — next agent can sync notes there.
-
----
-
-## Handoff Checklist
-
-- [ ] Next agent reviews this document
-- [ ] Next agent loads relevant skills (visual-translator, excalidraw-writer, etc.)
-- [ ] Next agent confirms user PRD or example artifact to start with
-- [ ] Next agent checks starred repos if new tool patterns needed
-- [ ] Progress logged back to map.md (decisions + blockers)
-- [ ] Sync updates to local Obsidian vault
-
+`wayfinder` · `grill-me` · `domain-modeling` · `documentation-and-adrs` (if ADR-002 needed) · `playwright` (only if prototyping runnable artifacts)
