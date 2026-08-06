@@ -1,8 +1,8 @@
 # Artifact-Builder Wayfinder Flow — Session Handoff
 
-**Date:** 2026-08-06 (updated after tickets 03/04/06)
+**Date:** 2026-08-06 (updated after tickets 03/04/06/07)
 **User:** azizmaitig
-**Next mission:** Resolve **07 - Flow orchestration shape** (grilling, HITL) — one ticket per session.
+**Next mission:** Resolve **08 - Format selection rule** (grilling, HITL) — one ticket per session.
 
 ---
 
@@ -24,20 +24,21 @@
 | 03 Domain-modeling gate | Triggered gate (fires on briefs with a domain model): research→explain→validate; outputs worked example (load-bearing) + assumptions + confidence notes; lives in brief + JSX comments, never in-UI |
 | 04 Design-taste layer | Festival look = default template (token block, per-brief palette freedom) — ADR-001 |
 | 06 Build pipeline | `build-artifact.mjs` → entry.jsx + deps → one verified HTML (esbuild + Tailwind v4 CLI, NODE_ENV define in-script, no Babel). Verified: festival rebuild 610KB, Playwright-clean |
+| 07 Flow orchestration shape | Option B: single `/artifact` command, one session. Flow lives in one SKILL.md (8 gates: brainstorm → format → domain-model → design → implement → verify → build → archive) + `/artifact` command entry; HITL only at brainstorm/domain/verify. Format gate = #2 (rule → 08); verify strictness → 05. Skill build graduated to ticket 09 |
 
 ## Open tickets
 
-- **07 - Flow orchestration shape (NEXT, frontier):** How does a user request become an artifact? Option A: mini-wayfinder per artifact (destination → decision tickets → resolve → build). Option B: single /artifact command with embedded gates (brainstorm → domain-model → design → build → verify). Where does the flow live — skill, command, map?
-- **08 - Format selection rule (sibling):** JSX vs HTML choice rule; may be a gate in orchestration (07) or in the creative-brief layer
+- **08 - Format selection rule (NEXT, frontier):** JSX vs HTML choice rule. Placement already settled by 07: it is gate #2 in the orchestration, NOT the creative-brief layer. Remaining: the rule content — candidate axes in the ticket body (interactivity/statefulness, static/streaming content, whitelist lib needs, user preference)
+- **09 - Build the artifact-builder skill (frontier, unblocked since 07):** task — build the SKILL.md implementing the 8-gate flow + `/artifact` command; reuses visual-translator Step-0, excalidraw-writer tokens, frontend_aesthetics, domain-modeling, webapp-testing; gates 2/6 placeholder-shaped until 08/05 resolve (embed gates, defer rules)
 - **05 - Verification gate:** unblocked since 06 resolved — what counts as "verified rendering" (headless render, screenshot, interaction smoke test, console-error-clean); minimum gate before ship, hooks into build-artifact pipeline
 
-## Inputs for ticket 07
+## Inputs for ticket 08
 
-- Copilot's draft 7-step pipeline in `research/02-copilot-repo-research.md` (spec interview → wireframe → React impl → domain validation → QA → build → deploy/archive) = a concrete Option B shape
-- Ticket 08's question: where the JSX/HTML format choice lives
-- Build contract from 06: entry.jsx → single verified HTML
-- Domain gate from 03: hard step when brief has a domain model
-- Token template from ADR-001: stamped on every artifact
+- 07's answer: format gate sits at gate #2 of the orchestration — only the selection rule is left to decide
+- Candidate axes (from 08's body): interactivity/statefulness → JSX; static/streaming content, data-viz dashboards → HTML; whitelist libs require JSX/bundling; user preference ("in a jsx file")
+- Format context from 02: JSX primary + HTML fallback, interactive on demand; whitelist recharts/lucide-react/mathjs/papaparse
+- Corpus evidence (research/03): community sims skew vanilla HTML/JS + CDN libs — relevant to when HTML is the right call
+- Copilot's draft 7-step pipeline in `research/02-copilot-repo-research.md` for the flow shape (already decided in 07)
 
 ## Conventions
 
