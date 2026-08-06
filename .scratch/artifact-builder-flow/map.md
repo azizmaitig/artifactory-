@@ -10,6 +10,7 @@ A vault-native artifact-builder flow — wayfinder-style decision map + skills �
 - Skills every session should consult: visual-translator Step-0 brainstorm, excalidraw-writer tokens, frontend_aesthetics (Anthropic blog, Nov 2025), brainstorming, grill-me + domain-modeling (HITL), playwright/webapp-testing (QA)
 - Standing preferences: terse/pragmatic; dark theme + single accent; tabular-nums mono readouts; verified before shipped; no untested logic
 - Reference artifacts: festival-noise-sim.jsx (`C:\Users\azizm\Downloads\mon-festival\festival-noise-sim.jsx`); working build pipeline from that session (esbuild + Tailwind CLI → single self-contained HTML, NODE_ENV define fix)
+- Copilot-handoff repo research (Graphify RenderedArtifact, conductor linkify, SkillOpt) → `research/02-copilot-repo-research.md` — input for tickets 05/07
 
 ## Decisions so far
 
