@@ -11,6 +11,7 @@ Apply the adopted gate-3 research text (ticket 13 `## Answer`) to `.opencode/ski
 ## Scope
 
 - Replace gate-3 research-step text with the adopted text verbatim from `issues/13-adopt-88labs-light-subset-into-gate3.md` (## Answer).
+- **Also carry ticket 16's adopted experiment-loop text** (from `issues/16-experiment-loop-into-gate3.md` ## Answer) as the gate-3 appendix block — high-stakes conditional sub-mode, after the 4-step trace text.
 - Keep gate 3's existing structure: research → explain → validate; triggered only when the brief has a domain model.
 - Reference `research/11-gate3-88labs-research-mechanics.md` (mechanics), `research/13b-external-repo-audit.md` (ARIS/text-to-cad adoptions), `research/13c-pilot-festival-noise-trace.md` (worked example of the trace in action) as inline pointers.
 - Do NOT touch gate 4 (ticket 14 owns that edit) or gate 6 (its own prior ticket).
