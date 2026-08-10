@@ -1,37 +1,30 @@
-# ADR-001: Festival design language as default artifact template
+# ADR-001: Festival design language — baseline preset (rev. 2026-08-10)
 
 ## Status
 
-Accepted (may be reshaped after first artifacts ship)
+**Revised 2026-08-10** — original "default artifact template" superseded: festival is now **one preset among N** in the theme library (`artifact-builder/docs/design/themes.md`), a baseline not a house style. Original decision text retained below for history.
 
-## Date
+## Revision (2026-08-10) — why the demotion
 
-2026-08-06
+Gate 4 was restructured by user directive (ticket 12): **no single hardcoded design element**. The festival token block is demoted from "the default template, stamped into every artifact" to a baseline preset, because:
 
-## Context
+1. **The festival look is itself on Claude's AI-cluster list.** Near-black `#0A0C0E` + single accent is a trained aggregate default ("minimal dark: #0E0E10 end-to-end, one accent, sparse stat cards" — open-design forbids it verbatim; research/12b). Stamping it as the default ships exactly the generic look the flow exists to avoid.
+2. **Ecosystem + Claude's own doctrine.** Claude's artifact pack: "the default styling is a starting point, not a house style." Multi-theme libraries are the norm (3–8 themes per system: Exocortex 5, editorial-artifact-skills 3, polished-design 8 presets + 5 anti-presets, design-artifact-loop 59 systems; research/12b). "Derive, never invent" (Claude Design create-design-system).
+3. **Subject-first selection.** `brief > theme preset > model choices` — the preset is chosen from the subject's world, never defaulted unasked. Vague briefs get a 3-direction step instead.
 
-The artifact-builder flow must produce artifacts with "distinctive design taste" (map destination). The reference artifact festival-noise-sim established a concrete look the user wants as the quality bar:
-
-- Dark `#0A0C0E` background
-- Single teal accent (`#3FD8C4`)
-- Tabular-nums mono readouts
-- Uppercase tracking labels
-- Layered surfaces + hairline borders
-- Flat (no gradients/shadows/glow) — per mined rule 6 from ticket 01
-
-Open question (ticket 04): fixed token set vs design-axes prompt vs hybrid. Sources of truth at decision time:
-
-- **Ticket 01 mined rules**: design = tokens (CSS vars), mandatory dark mode via token redefinition; two type weights (400/500), sentence case, no emoji, 11px floor; color-encodes-meaning (2–3 ramps, semantic states reserved); sketch 4–6 hex palette + type roles + layout concept BEFORE coding; resist AI-house-style.
-- **madewithclaude.com corpus extraction** (research/03): community artifacts skew vanilla HTML/JS; dark + mono telemetry is community-wide taste for sims (SpaceX sim: `#000`, Courier New, live readouts, 4.4K likes); single-file inline CSS/JS is the corpus convention.
-- Ticket 02 decided v1 = JSX primary + HTML fallback — both formats need the same taste applied.
-
-## Decision
+## Decision (original, 2026-08-06 — historical)
 
 The festival design language becomes the **default artifact template**: a token block (CSS variables for bg/surface/accent/text, type roles, layout rules) stamped into every generated artifact, shared identically by the JSX and HTML fallback paths. Per-brief freedom is limited to the palette (4–6 hex, chosen before coding per mined rule 10) and layout concept. Structure is fixed; expression is per-brief.
 
 The token block ships as a fixed section of the flow's prompt layer (creative-brief → build), not a separate design-review step.
 
-## Alternatives Considered
+## Current status (post-revision)
+
+- The festival token block lives in `artifact-builder/docs/design/themes.md` as **festival-dark** — one of four starter presets (festival-dark, paper-editorial, terminal, bold-signal), each a token block + one-line voice + when-to-use.
+- Gate 4 (SKILL.md) no longer stamps a token block: it picks a direction from the theme library (or 3 directions for vague briefs), commits a constraint doc (color/type/layout/**signature**) before coding, and runs the review-and-revise loop against the anti-slop ban list.
+- ADR-001 remains canonical as the **festival-dark preset's** record and the flow's design-history anchor; it is NOT the flow's single source of taste.
+
+## Alternatives Considered (original)
 
 ### Fixed frozen token set (option a)
 
@@ -53,8 +46,7 @@ The token block ships as a fixed section of the flow's prompt layer (creative-br
 
 ## Consequences
 
-- Generated artifacts share a recognizable, validated visual language (corpus-consistent: dark + mono readouts)
-- Per-brief palette freedom prevents house-style convergence
-- One token block serves both JSX and HTML paths — single source of truth for the flow
-- Token block is prompt-layer content; reshaping it later means editing one section, not re-architecting (supports the "might reshape later" caveat)
-- First artifacts shipped through the flow will validate the template; ADR may be superseded if the look doesn't generalize beyond festival-class artifacts
+- Generated artifacts no longer converge on one house style; preset + per-brief signature keep each artifact ownable (ticket 12 doctrine).
+- Festival-dark remains a first-class, validated look for sim/tool class artifacts (corpus-consistent: dark + mono readouts).
+- Preset library lives in `docs/design/themes.md`; new presets earn their place through real projects (corpus standard pending, map fog).
+- Gate 6 gains a second-pass design critic (quality + originality decide pass/fail) so taste regressions are caught on the rendered output, not self-graded (ticket 12 Q3/Q4).
