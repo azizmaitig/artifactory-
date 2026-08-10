@@ -1,4 +1,4 @@
-# 03 - madewithclaude.com corpus extraction
+﻿# 03 - madewithclaude.com corpus extraction
 
 Source: https://madewithclaude.com + https://claude.ai/public/artifacts (rendered via Playwright, code view). Gallery of community Claude artifacts — the real corpus behind awesome-claude-artifacts. Input for **04 - Artifact design-taste layer**.
 
@@ -41,3 +41,13 @@ Tools, Design, Data, Graphics, Education, Programming, Creative, Web Design, Gam
 | readouts | pane + chart | top-left live text | none (game) |
 | surfaces | layered + hairline | canvas border | 3D lit meshes |
 | libs | recharts + Tailwind | none | three + cannon (CDN) |
+
+## Design-management angle (extended for ticket 10)
+
+How the corpus artifacts sequence and manage design decisions (palette → layout → typography → charts), read against the leaked artifact prompts (ticket 01 + ticket 10):
+
+1. **Palette precedes everything, and it is subject-grounded.** SpaceX sim picks its tokens from the subject's world (space = black + thrust-orange + asteroid brown); Falling Cube from a playground world (sky-blue, vivid primaries). This matches the leaked artifact-design rule "the subject's own world is where distinctive choices come from" — the corpus shows the same behavior, palette chosen first, before layout.
+2. **Layout is canvas-centric with a HUD layer.** Both sims put the interactive canvas first and overlay a telemetry/readout UI (SpaceX: top-left live text; Falling Cube: minimal controls). The readout pane is the "summary before detail" pattern the artifact-design skill prescribes for UI-class artifacts.
+3. **Typography enters only where data must be read.** SpaceX uses Courier New mono solely for telemetry; Falling Cube uses system font and no readouts. Mono-for-numbers is a deliberate data role, not a blanket style — consistent with festival's tabular-nums readout rule but narrower: the corpus applies mono to data, not to whole-page chrome.
+4. **Charts/readouts are the last layer, and only where data exists.** The SpaceX sim renders numbers as text readouts, not a chart — the dataviz rule "sometimes the answer is not a chart (a stat tile or hero number)" in action. Neither artifact fabricates a time axis or a chart for data it doesn't have (the anti-fabrication rule from the artifact skill pack).
+5. **Single accent + restrained ramps is the corpus norm.** One semantic accent per artifact (thrust orange, green cube), everything else neutral or subject-derived. Matches visualize.md's "2–3 colors per diagram" complexity budget.

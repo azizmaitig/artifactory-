@@ -1,0 +1,9 @@
+# Dependencies — never commit (artifact workspaces install per-project)
+node_modules/
+
+# Build intermediates
+.artifact-build/
+
+# OS / editor
+.DS_Store
+Thumbs.db

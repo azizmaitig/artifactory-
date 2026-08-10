@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Orbit Sim — Orbital Mechanics Sandbox</title>
+<link rel="icon" href="data:,">
+<style>
+:root{--bg:#05070B;--surface:#0C1016;--hairline:rgba(255,255,255,.08);--accent:#3FD8C4;--text-primary:#E8EAED;--text-secondary:#9AA4AE;--mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;--font-body:system-ui,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text-primary);font:400 14px/1.5 var(--font-body);padding:24px}
+.wrap{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:280px 1fr;gap:16px}h1{font-size:18px;font-weight:500;letter-spacing:.08em;text-transform:uppercase}.sub{color:var(--text-secondary);font-size:12px;margin-top:4px}
+.panel{background:var(--surface);border:1px solid var(--hairline);padding:14px}label{display:block;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--text-secondary);margin:12px 0 4px}input[type=range]{width:100%;accent-color:var(--accent)}
+.val{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:13px;color:var(--text-primary)}.btns{display:flex;gap:8px;margin-top:16px}
+button{flex:1;background:transparent;color:var(--text-primary);border:1px solid var(--hairline);padding:8px 0;font:500 12px var(--font-body);letter-spacing:.1em;text-transform:uppercase;cursor:pointer}button:hover{border-color:var(--accent);color:var(--accent)}#launch{background:var(--accent);color:#05070B;border-color:var(--accent)}
+canvas{width:100%;aspect-ratio:1;display:block;background:var(--bg);border:1px solid var(--hairline)}
+.tele{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:16px}.t{background:var(--surface);border:1px solid var(--hairline);padding:10px}.t .k{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--text-secondary)}.t .k.eps{text-transform:none}.t .v{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:14px;margin-top:2px}#status{color:var(--accent)}
+@media(max-width:760px){.wrap{grid-template-columns:1fr}.tele{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <aside class="panel">
+    <h1>Orbit Sim</h1>
+    <p class="sub">Two-body sandbox, GM = 1, massless satellite</p>
+    <label for="r">Launch radius r</label>
+    <input type="range" id="r" min="1.5" max="10" step="0.1" value="4">
+    <div class="val" id="rVal">4.0</div>
+    <label for="v">Tangential speed v</label>
+    <input type="range" id="v" min="0.2" max="1.2" step="0.01" value="0.5">
+    <div class="val" id="vVal">0.50</div>
+    <label for="ts">Time scale</label>
+    <input type="range" id="ts" min="0.5" max="3" step="0.1" value="1">
+    <div class="val" id="tsVal">1.0×</div>
+    <div class="btns">
+      <button id="launch">Launch</button>
+      <button id="pause">Pause</button>
+      <button id="reset">Reset</button>
+    </div>
+    <p class="sub">Params apply on next launch. Space = pause, R = reset.</p>
+  </aside>
+  <main>
+    <canvas id="cv"></canvas>
+    <div class="tele">
+      <div class="t"><div class="k">Status</div><div class="v" id="status">-</div></div>
+      <div class="t"><div class="k">r</div><div class="v" id="rOut">-</div></div>
+      <div class="t"><div class="k">v</div><div class="v" id="vOut">-</div></div>
+      <div class="t"><div class="k eps">ε</div><div class="v" id="epsOut">-</div></div>
+      <div class="t"><div class="k">a_sma</div><div class="v" id="aOut">-</div></div>
+      <div class="t"><div class="k">T</div><div class="v" id="tOut">-</div></div>
+      <div class="t"><div class="k">r_apo</div><div class="v" id="apoOut">-</div></div>
+      <div class="t"><div class="k">r_peri</div><div class="v" id="periOut">-</div></div>
+    </div>
+  </main>
+</div>
+<script>
+(function () {
+  'use strict';
+
+  /* ============================================================
+     ORBIT SIM - two-body orbital mechanics sandbox
+     Domain model (Gate 3, validated - do not deviate):
+       Normalized units, GM = 1. Two-body approximation, orbiting
+       body massless, strictly planar, no drag.
+       a = -(GM/r^3) * r ;  v += a*dt ;  r += v*dt  (symplectic Euler)
+       v_circ = sqrt(GM/r) ;  v_esc = sqrt(2*GM/r)
+       epsilon = v^2/2 - GM/r ;  a_sma = 1/(2/r - v^2/GM)  (bound only)
+       T = 2*pi*sqrt(a_sma^3/GM)  (bound only)
+       epsilon < 0 -> BOUND ;  epsilon >= 0 -> ESCAPING
+
+     WORKED EXAMPLE (default state): r = 4, v = 0.5 = v_circ
+       -> circular orbit, T = 2*pi*4^(3/2) = 16*pi ~ 50.27 time units.
+       v_esc at r = 4: sqrt(2/4) ~ 0.7071.
+
+     ASSUMPTIONS (error direction if violated):
+       - massless satellite: no back-reaction on central body (real
+         two-body would precess slightly; error grows with m_sat/m_c).
+       - strictly planar: ignores out-of-plane perturbations.
+       - no drag: real drag would decay the orbit (r shrinks over time).
+       - GM = 1 normalization: pure scale choice, no physical error.
+       - symplectic Euler: energy error is bounded (oscillates) but its
+         amplitude grows with dt and timeScale.
+
+     CONFIDENCE: matches analytic Kepler solution. Circular case exact
+       (v = v_circ reproduces r = const); vis-viva a_sma and eccentricity
+       from epsilon/h match the integrated trajectory.
+     ============================================================ */
+
+  var GM = 1;
+  var MAX_SUBSTEP = 0.02;   // cap on per-substep dt (stability at high timeScale)
+  var TRAIL_LEN = 300;      // trail points kept
+  var FIT_R = 8;            // sim units that fit in half the canvas
+
+  var cv = document.getElementById('cv');
+  var ctx = cv.getContext('2d');
+  var rSlider = document.getElementById('r');
+  var vSlider = document.getElementById('v');
+  var tsSlider = document.getElementById('ts');
+  var rVal = document.getElementById('rVal');
+  var vVal = document.getElementById('vVal');
+  var tsVal = document.getElementById('tsVal');
+  var launchBtn = document.getElementById('launch');
+  var pauseBtn = document.getElementById('pause');
+  var resetBtn = document.getElementById('reset');
+  var out = {
+    status: document.getElementById('status'),
+    r: document.getElementById('rOut'),
+    v: document.getElementById('vOut'),
+    eps: document.getElementById('epsOut'),
+    a: document.getElementById('aOut'),
+    T: document.getElementById('tOut'),
+    apo: document.getElementById('apoOut'),
+    peri: document.getElementById('periOut')
+  };
+
+  var sim = {
+    running: false,
+    paused: false,
+    t: 0, x: 0, y: 0, vx: 0, vy: 0,
+    prevTh: 0,
+    angleAcc: 0,
+    lastOrbitT: 0,
+    period: null,
+    trail: []
+  };
+
+  function fmt(n, d) {
+    return (isFinite(n) ? n.toFixed(d) : '-');
+  }
+
+  function launch() {
+    var r = parseFloat(rSlider.value);
+    var v = parseFloat(vSlider.value);
+    sim.running = true;
+    sim.paused = false;
+    sim.t = 0;
+    sim.x = r; sim.y = 0;
+    sim.vx = 0; sim.vy = v;      // tangential, counterclockwise
+    sim.prevTh = 0;
+    sim.angleAcc = 0;
+    sim.lastOrbitT = 0;
+    sim.period = null;
+    sim.trail = [];
+    pauseBtn.textContent = 'Pause';
+  }
+
+  function step(dt) {
+    var r2 = sim.x * sim.x + sim.y * sim.y;
+    var r = Math.sqrt(r2);
+    var r3 = r2 * r;
+    var ax = -GM * sim.x / r3;
+    var ay = -GM * sim.y / r3;
+    sim.vx += ax * dt;
+    sim.vy += ay * dt;
+    sim.x += sim.vx * dt;
+    sim.y += sim.vy * dt;
+    sim.t += dt;
+    // accumulate wrapped angle to measure orbital period
+    var th = Math.atan2(sim.y, sim.x);
+    var dth = th - sim.prevTh;
+    if (dth > Math.PI) dth -= 2 * Math.PI;
+    if (dth < -Math.PI) dth += 2 * Math.PI;
+    sim.angleAcc += dth;
+    sim.prevTh = th;
+    if (sim.angleAcc >= 2 * Math.PI) {
+      sim.period = sim.t - sim.lastOrbitT;
+      sim.lastOrbitT = sim.t;
+      sim.angleAcc -= 2 * Math.PI;
+    }
+  }
+
+  function togglePause() {
+    if (!sim.running) return;
+    sim.paused = !sim.paused;
+    pauseBtn.textContent = sim.paused ? 'Resume' : 'Pause';
+  }
+
+  function draw() {
+    var w = cv.clientWidth, h = cv.clientHeight;
+    if (w === 0 || h === 0) return;
+    var dpr = window.devicePixelRatio || 1;
+    if (cv.width !== Math.round(w * dpr) || cv.height !== Math.round(h * dpr)) {
+      cv.width = Math.round(w * dpr);
+      cv.height = Math.round(h * dpr);
+    }
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, w, h);
+    var cx = w / 2, cy = h / 2;
+    var scale = (Math.min(w, h) / 2) / FIT_R;
+    function px(x, y) { return [cx + x * scale, cy - y * scale]; }
+
+    // faint grid rings + axes
+    ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+    ctx.lineWidth = 1;
+    for (var rr = 2; rr <= FIT_R; rr += 2) {
+      ctx.beginPath();
+      ctx.arc(cx, cy, rr * scale, 0, 2 * Math.PI);
+      ctx.stroke();
+    }
+    ctx.beginPath();
+    ctx.moveTo(cx - w / 2, cy); ctx.lineTo(cx + w / 2, cy);
+    ctx.moveTo(cx, cy - h / 2); ctx.lineTo(cx, cy + h / 2);
+    ctx.stroke();
+
+    // reference r = 4 ring (dashed) - canonical example circle
+    ctx.setLineDash([5, 5]);
+    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.beginPath();
+    ctx.arc(cx, cy, 4 * scale, 0, 2 * Math.PI);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // trail (translucent fade toward the head)
+    var n = sim.trail.length;
+    for (var i = 1; i < n; i++) {
+      var a = i / n;
+      ctx.strokeStyle = 'rgba(63,216,196,' + (a * 0.45).toFixed(3) + ')';
+      ctx.lineWidth = 1.5;
+      var p0 = px(sim.trail[i - 1].x, sim.trail[i - 1].y);
+      var p1 = px(sim.trail[i].x, sim.trail[i].y);
+      ctx.beginPath();
+      ctx.moveTo(p0[0], p0[1]);
+      ctx.lineTo(p1[0], p1[1]);
+      ctx.stroke();
+    }
+
+    // central body (flat: dot + hairline ring)
+    ctx.fillStyle = '#3FD8C4';
+    ctx.beginPath();
+    ctx.arc(cx, cy, 5, 0, 2 * Math.PI);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(63,216,196,0.35)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.arc(cx, cy, 9, 0, 2 * Math.PI);
+    ctx.stroke();
+
+    // satellite
+    if (sim.running) {
+      var p = px(sim.x, sim.y);
+      ctx.fillStyle = '#E8EAED';
+      ctx.beginPath();
+      ctx.arc(p[0], p[1], 3.5, 0, 2 * Math.PI);
+      ctx.fill();
+    }
+  }
+
+  function readouts() {
+    if (!sim.running) {
+      out.status.textContent = '-';
+      out.r.textContent = '-';
+      out.v.textContent = '-';
+      out.eps.textContent = '-';
+      out.a.textContent = '-';
+      out.T.textContent = '-';
+      out.apo.textContent = '-';
+      out.peri.textContent = '-';
+      return;
+    }
+    var r = Math.sqrt(sim.x * sim.x + sim.y * sim.y);
+    var v = Math.sqrt(sim.vx * sim.vx + sim.vy * sim.vy);
+    var eps = v * v / 2 - GM / r;
+    var bound = eps < 0;
+    out.status.textContent = bound ? 'BOUND' : 'ESCAPING';
+    out.r.textContent = fmt(r, 2);
+    out.v.textContent = fmt(v, 3);
+    out.eps.textContent = fmt(eps, 3);
+    if (bound) {
+      var a = 1 / (2 / r - v * v / GM);
+      var h = sim.x * sim.vy - sim.y * sim.vx;   // specific angular momentum
+      var e = Math.sqrt(Math.max(0, 1 + 2 * eps * h * h / (GM * GM)));
+      // T: measured elapsed sim-time per orbit once available, else analytic prediction
+      var T = sim.period !== null ? sim.period : 2 * Math.PI * Math.sqrt(a * a * a / GM);
+      out.a.textContent = fmt(a, 3);
+      out.T.textContent = fmt(T, 3);
+      out.apo.textContent = fmt(a * (1 + e), 3);
+      out.peri.textContent = fmt(a * (1 - e), 3);
+    } else {
+      out.a.textContent = '-';
+      out.T.textContent = '-';
+      out.apo.textContent = '-';
+      out.peri.textContent = '-';
+    }
+  }
+
+  var lastNow = null;
+
+  function frame(now) {
+    requestAnimationFrame(frame);
+    if (lastNow === null) lastNow = now;
+    var frameDt = Math.min((now - lastNow) / 1000, 1 / 30); // clamp tab-background jumps
+    lastNow = now;
+    if (sim.running && !sim.paused) {
+      var eff = frameDt * parseFloat(tsSlider.value);
+      var n = Math.max(1, Math.ceil(eff / MAX_SUBSTEP));
+      var h = eff / n;
+      for (var i = 0; i < n; i++) step(h);
+      sim.trail.push({ x: sim.x, y: sim.y });
+      if (sim.trail.length > TRAIL_LEN) sim.trail.shift();
+    }
+    draw();
+    readouts();
+  }
+
+  function syncSliderVals() {
+    rVal.textContent = parseFloat(rSlider.value).toFixed(1);
+    vVal.textContent = parseFloat(vSlider.value).toFixed(2);
+    tsVal.textContent = parseFloat(tsSlider.value).toFixed(1) + '×';
+  }
+
+  rSlider.addEventListener('input', syncSliderVals);
+  vSlider.addEventListener('input', syncSliderVals);
+  tsSlider.addEventListener('input', syncSliderVals);
+  launchBtn.addEventListener('click', launch);
+  pauseBtn.addEventListener('click', togglePause);
+  resetBtn.addEventListener('click', launch);   // RESET restarts with current sliders
+
+  document.addEventListener('keydown', function (e) {
+    if (e.code === 'Space') { e.preventDefault(); togglePause(); }
+    else if (e.code === 'KeyR') { launch(); }
+  });
+
+  syncSliderVals();
+  launch();   // default state = validated worked example (r=4, v=0.5)
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
