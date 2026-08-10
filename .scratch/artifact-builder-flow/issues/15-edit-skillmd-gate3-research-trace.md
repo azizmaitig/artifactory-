@@ -1,8 +1,18 @@
 # 15 - Edit SKILL.md gate 3 with the adopted research trace
 
 Type: task
-Status: open
+Status: resolved
 Blocked by: 13
+
+## Answer
+
+Applied to `.opencode/skills/artifact-builder/SKILL.md` gate 3:
+
+- **Ticket-13 trace text verbatim** — the 4-step trace (2-engine search → T1–T4 trimmed scoring override-first → Jaccard ≥0.75 dedup via `source-dedup.js` with manual fallback → degraded gate no-hard-block) + evidence-based confidence + domain-notes block. Replaced the bare research leg ("Per ticket 03, run: research → explain → validate") — note: the "never an LLM guess" phrase ticket 15 referenced was not present in the current SKILL.md; the research-step description was the actual target.
+- **Ticket-16 experiment-loop appendix text verbatim** (high-stakes conditional sub-mode: round log, caps 3/stale-2/WAKE-IDLE, REPRODUCED/EXHAUSTED exit, HITL at validate) after the domain-notes block.
+- **Verified**: frontmatter intact, gate sequence unbroken (gate 3 → gate 4), outputs block preserved, no renumbering, references block untouched (ticket 14 owns gate 4; ticket 05 locked gate 6 unchanged).
+
+References added inline: research/11, 13b, 13c, 16 as specified. Committed with ticket-16 resolution (3995e0c); this ticket's SKILL.md edit committed separately after verification.
 
 ## Question
 
