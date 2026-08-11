@@ -1,0 +1,18 @@
+{
+  "name": "six-degrees",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build:local": "node ../../build-artifact.mjs --entry entry.jsx --out six-degrees.html --title \"Six Degrees of Separation\""
+  },
+  "dependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.24.0",
+    "@tailwindcss/cli": "^4.0.0",
+    "tailwindcss": "^4.0.0"
+  }
+}
