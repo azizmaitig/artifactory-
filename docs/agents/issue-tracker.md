@@ -33,3 +33,4 @@ Used by `/wayfinder`. The **map** is a file with one **child** file per ticket.
 ## Current effort
 
 - `artifact-builder-flow` — the artifact-builder wayfinder map (see `.scratch/artifact-builder-flow/map.md` for destination and decisions).
+- `pwa-gallery-flow` — phone-ready installable artifacts (PWA envelope + gallery) (see `.scratch/pwa-gallery-flow/map.md`).
