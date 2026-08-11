@@ -1,7 +1,7 @@
 # 20 — Preview workflow for generated artifacts
 
 Type: research
-Status: open
+Status: claimed
 Blocked by:
 
 ## Question
