@@ -10,7 +10,7 @@ Blocked by: 07
 
 **Shipped.** Two files, committed to the vault (`0931610`, `feat: add artifact-builder skill + /artifact command`):
 
-- **`.opencode/skills/artifact-builder/SKILL.md`** — the 8-gate flow (gate sequence per 07): brainstorm (HITL, visual-translator Step-0 style) → format (gate 2, ticket-08 table embedded verbatim) → domain-model (conditional HITL, per 03) → design (ADR-001 token block + 10 mined rules inlined) → implement (single entry.jsx/HTML, whitelist per 02) → verify (Playwright, strictness deferred to 05) → build (`artifact-builder/build-artifact.mjs`) → archive. Reuses named skills via `skill(name=...)`: visual-translator, domain-modeling, webapp-testing.
+- **`.opencode/skills/artifact-builder/SKILL.md`** — the 8-gate flow (gate sequence per 07): brainstorm (HITL, visual-translator Step-0 style) → format (gate 2, ticket-08 table embedded verbatim) → domain-model (conditional HITL, per 03) → design (ADR-001 token block + 10 mined rules inlined) → implement (single entry.jsx/HTML, whitelist per 02) → verify (Playwright, strictness deferred to 05) → build (`10-Projects/11-Active/artifactory/build-artifact.mjs`) → archive. Reuses named skills via `skill(name=...)`: visual-translator, domain-modeling, webapp-testing.
 - **`.opencode/commands/artifact.md`** — the `/artifact` slash-command entry: thin loader mirroring the vault's `exca.md` pattern (description frontmatter + step list + `skill(name="artifact-builder")` kickoff).
 
 **Build corrections vs the ticket's assumptions** (discovered by explore during the build):

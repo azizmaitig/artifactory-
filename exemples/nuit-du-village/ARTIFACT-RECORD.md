@@ -6,7 +6,7 @@
 | Format | **JSX** (React 19 + Tailwind v4 + recharts) |
 | Format reason | Composed multi-screen UI sharing one phase state machine + recharts (whitelisted React lib) for the end-screen tally — ticket 08 rules 2 & 4 |
 | Files | `entry.jsx` (source) · `nuit-du-village.html` (built, self-contained) |
-| Build | `node artifact-builder/build-artifact.mjs` — structural verification passed (≥1KB, #root, inline style/script) |
+| Build | `node 10-Projects/11-Active/artifactory/build-artifact.mjs` — structural verification passed (≥1KB, #root, inline style/script) |
 | Size | 644 KB self-contained HTML |
 
 ## What it is
@@ -51,4 +51,4 @@ ADR-001 token block stamped (dark `#0A0C0E`, layered surfaces, hairline borders,
 - `nuit-du-village.html` — built, self-contained, verified
 - `package.json` — deps (react 19, recharts 2, lucide-react, tailwind v4, esbuild)
 
-Archived 2026-08-07 · run: `node artifact-builder/build-artifact.mjs --entry .../entry.jsx --out .../nuit-du-village.html --title "Nuit du Village"`
+Archived 2026-08-07 · run: `node 10-Projects/11-Active/artifactory/build-artifact.mjs --entry .../entry.jsx --out .../nuit-du-village.html --title "Nuit du Village"`

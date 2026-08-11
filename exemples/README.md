@@ -7,11 +7,11 @@ Canonical home for every new artifact built via `/artifact` (artifact-builder sk
 
 **Pipeline:** run from the artifact's subfolder:
 ```
-node "D:\projects\obsidian\second brain\artifact-builder\build-artifact.mjs" --entry entry.jsx --out <name>.html --title "<Name>"
+node "D:\projects\obsidian\second brain\10-Projects\11-Active\artifactory\build-artifact.mjs" --entry entry.jsx --out <name>.html --title "<Name>"
 ```
 
 **Rules**
-- Never create artifacts in `10-Projects/11-Active/` — this is the workspace.
+- Never create artifacts outside `10-Projects/11-Active/artifactory/exemples/` — this is the workspace.
 - Verify the BUILT html in Playwright before shipping (renders, console-clean, controls).
 - Record every artifact in the table below + `ARTIFACT-RECORD.md` in its folder.
 

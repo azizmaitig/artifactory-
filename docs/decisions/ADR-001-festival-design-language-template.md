@@ -2,7 +2,7 @@
 
 ## Status
 
-**Revised 2026-08-10** — original "default artifact template" superseded: festival is now **one preset among N** in the theme library (`artifact-builder/docs/design/themes.md`), a baseline not a house style. Original decision text retained below for history.
+**Revised 2026-08-10** — original "default artifact template" superseded: festival is now **one preset among N** in the theme library (`10-Projects/11-Active/artifactory/docs/design/themes.md`), a baseline not a house style. Original decision text retained below for history.
 
 ## Revision (2026-08-10) — why the demotion
 
@@ -20,7 +20,7 @@ The token block ships as a fixed section of the flow's prompt layer (creative-br
 
 ## Current status (post-revision)
 
-- The festival token block lives in `artifact-builder/docs/design/themes.md` as **festival-dark** — one of four starter presets (festival-dark, paper-editorial, terminal, bold-signal), each a token block + one-line voice + when-to-use.
+- The festival token block lives in `10-Projects/11-Active/artifactory/docs/design/themes.md` as **festival-dark** — one of four starter presets (festival-dark, paper-editorial, terminal, bold-signal), each a token block + one-line voice + when-to-use.
 - Gate 4 (SKILL.md) no longer stamps a token block: it picks a direction from the theme library (or 3 directions for vague briefs), commits a constraint doc (color/type/layout/**signature**) before coding, and runs the review-and-revise loop against the anti-slop ban list.
 - ADR-001 remains canonical as the **festival-dark preset's** record and the flow's design-history anchor; it is NOT the flow's single source of taste.
 

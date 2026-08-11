@@ -6,7 +6,7 @@ Blocked by: 14
 
 ## Question
 
-Ticket 14 promised: "Validation rides on the next real artifact." resonance-lab v1/v2 (built 2026-08-10, `artifact-builder/exemples/resonance-lab/`) is the first artifact produced after the gate-4 rework (theme library + constraint-doc-first + design critic) and the gate-3 research-trace upgrade. Audit it against the current SKILL.md gates and record compliance + deltas:
+Ticket 14 promised: "Validation rides on the next real artifact." resonance-lab v1/v2 (built 2026-08-10, `10-Projects/11-Active/artifactory/exemples/resonance-lab/`) is the first artifact produced after the gate-4 rework (theme library + constraint-doc-first + design critic) and the gate-3 research-trace upgrade. Audit it against the current SKILL.md gates and record compliance + deltas:
 
 - **Gate 4**: theme direction picked from `docs/design/themes.md` (preset or explicit 3-direction step) or implicitly festival-dark? Design plan (color/type/layout/signature) committed before coding in the artifact record? Signature element present? Anti-slop self-check?
 - **Gate 6**: design critic second pass (fresh model, 4 axes, quality+originality PASS/FAIL) recorded in the artifact record — or was it replaced (computed-style audit due to host-model-no-vision)? What are the 4 scores?

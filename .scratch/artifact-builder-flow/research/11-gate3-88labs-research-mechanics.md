@@ -10,7 +10,7 @@
 - `88-Labs/scripts/scaffold-experiment.js`, `88-Labs/scripts/source-dedup.js`, `88-Labs/scripts/finalize-experiment.js`, `88-Labs/scripts/update-loop-stats.js`
 - `88-Labs/loop-stats.js` (real `sourceQuality` data, incl. a FAILED gate)
 - `.opencode/skills-archive/88-labs/SKILL.md` + `references/01-phase-execution.md`, `references/04-domain-authority.md`
-- Current gate 3: `artifact-builder/.scratch/artifact-builder-flow/issues/03-domain-modeling-gate.md`, `.opencode/skills/artifact-builder/SKILL.md` (gate 3 section)
+- Current gate 3: `10-Projects/11-Active/artifactory/.scratch/artifact-builder-flow/issues/03-domain-modeling-gate.md`, `.opencode/skills/artifact-builder/SKILL.md` (gate 3 section)
 
 ## 1. The 88-Labs loop as implemented
 
@@ -110,5 +110,5 @@ Placement: the trace is the INPUT to explain. The confidence notes (03 mandatory
 - `.opencode/skills-archive/88-labs/SKILL.md` — loop instructions, phase summaries, error handling
 - `.opencode/skills-archive/88-labs/references/01-phase-execution.md` — Phase 1.5 operative spec (scoring/dedup/gate steps)
 - `.opencode/skills-archive/88-labs/references/04-domain-authority.md` — tier table + overrides + scoring procedure
-- `artifact-builder/.scratch/artifact-builder-flow/issues/03-domain-modeling-gate.md` — current gate-3 contract (triggered, research→explain→validate, worked example + assumptions + confidence, never in-UI)
+- `10-Projects/11-Active/artifactory/.scratch/artifact-builder-flow/issues/03-domain-modeling-gate.md` — current gate-3 contract (triggered, research→explain→validate, worked example + assumptions + confidence, never in-UI)
 - `.opencode/skills/artifact-builder/SKILL.md` — gate 3 section (fires only when brief has a domain model; HITL at validate)
