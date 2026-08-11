@@ -2,7 +2,7 @@
 
 ## Destination
 
-A vault-native artifact-builder flow — wayfinder-style decision map + skills — that generates Claude-quality interactive artifacts on demand: correct domain modeling, distinctive design taste, verified rendering. Validated against artifacts like the festival-noise-sim (physics model + interactive sliders + live SVG diagram + recharts chart).
+A vault-native artifact-builder flow — wayfinder-style decision map + skills — that generates Claude-quality interactive artifacts on demand: correct domain modeling, distinctive design taste, verified rendering. Validated against artifacts like the festival-noise-sim (physics model + interactive sliders + live SVG diagram + recharts chart); current best exemplar **six-degrees** (corpus standard, ticket 19).
 
 ## Notes
 
@@ -35,6 +35,8 @@ A vault-native artifact-builder flow — wayfinder-style decision map + skills �
 - [Apply gate-4 design rework + gate-6 critic](issues/14-apply-gate4-design-rework.md) — SHIPPED: SKILL.md gate 4 rewritten around no-harcoded-element doctrine (theme-library direction pick / 3-direction step, constraint-doc-first plan with signature axis, review-and-revise loop, anti-slop ban list of failure modes); ADR-001 revised (festival → festival-dark baseline preset, redirect rationale recorded); `docs/design/themes.md` created (4 starter presets: festival-dark, paper-editorial, terminal, bold-signal); gate 6 gains second-pass design critic (fresh model over rendered screenshot; quality+originality decide PASS/FAIL; 4 scores recorded). Validation rides on the next real artifact.
 - [Adopt pedagogy spine into gate 1](issues/17-adopt-pedagogy-spine-into-gate1.md) — SHIPPED (user-locked house style; pilot = resonance-lab v2): SKILL.md gate 1 brief gains Audience/Hook fields + locked Pedagogy spine block (hook-first, staircase see→tweak→explain, predict-then-observe with sim restart from rest, plain-language readouts, Lesson+Explore modes); gate 6 gains check 5 (guided walkthrough end-to-end, observable state per step, reveals asserted against domain model); checklist updated.
 - [Validate reworked gates 3/4/6 against resonance-lab](issues/18-validate-reworked-gates-against-resonance-lab.md) — VALIDATED: first artifact under the rework passes gates 1/2/5/6(1-5)/7/8. Gate 4 partial root-caused to a STALE entry point: `.opencode/commands/artifact.md` still carried pre-rework text (12/14 never synced it) → corrected; post-hoc compliance = festival-dark subject-derived, tuned palette, no explicit signature line. Gate-3 trace not run (closed-form model, 6 in-browser asserts all matched — low-risk gap; revisit for published-value models). Design critic retro-run: Q8/O7/C8/F8 → PASS, scores recorded. Encoding trap (PS cmdlet round-trip mojibake) → SKILL.md gate-5 rule. Advisory: step-4 callout density.
+
+- [Artifact corpus and regression standard](issues/19-artifact-corpus-and-regression-standard.md) — corpus = every shipped verified artifact on 3 axes (works / unique look / user verdict) with a moving exemplar (currently six-degrees; destination bar moved from festival-noise-sim); gate-8 interrogation (3 terse questions, verdict in record, better-than-best moves the exemplar); no auto re-measurement (on-demand retro-runs only); preset promotion = two-real-projects rule; records are the vault of rejected looks. SKILL.md gains the locked "Corpus & regression standard" section.
 
 ## Not yet specified
 
