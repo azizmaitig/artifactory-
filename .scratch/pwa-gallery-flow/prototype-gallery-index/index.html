@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<link rel="icon" href="data:," />
+<title>Artifact Gallery</title>
+<style>
+  :root {
+    --bg: #0A0C0E;
+    --surface: #14171A;
+    --hairline: rgba(255,255,255,0.08);
+    --text: #E8EAED;
+    --muted: #9AA4AE;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    --font: system-ui, -apple-system, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { background: var(--bg); color: var(--text); font-family: var(--font); }
+  body {
+    max-width: 720px; margin: 0 auto; padding: 40px 20px;
+    padding-bottom: calc(40px + env(safe-area-inset-bottom));
+  }
+  header { margin-bottom: 28px; }
+  h1 { font-size: 20px; font-weight: 500; letter-spacing: 0.01em; }
+  p.sub { color: var(--muted); font-size: 13px; margin-top: 8px; line-height: 1.55; }
+  .cards { display: flex; flex-direction: column; gap: 12px; }
+  .card {
+    display: flex; gap: 14px; align-items: flex-start;
+    background: var(--surface); border: 1px solid var(--hairline);
+    border-radius: 12px; padding: 14px; text-decoration: none; color: inherit;
+    transition: border-color 0.15s ease;
+  }
+  .card:hover, .card:focus-visible { border-color: var(--accent, #3FD8C4); outline: none; }
+  .tile {
+    width: 52px; height: 52px; border-radius: 10px; flex: 0 0 52px;
+    background: var(--accent, #3FD8C4);
+    display: grid; place-items: center;
+    font-family: var(--mono); font-weight: 700; font-size: 24px; color: #FFFFFF;
+  }
+  .card h2 { font-size: 15px; font-weight: 500; }
+  .card .desc { color: var(--muted); font-size: 12.5px; line-height: 1.5; margin-top: 3px; }
+  .card .install { font-family: var(--mono); font-size: 10.5px; color: var(--muted); margin-top: 8px; line-height: 1.6; }
+  .card .install b { color: var(--text); font-weight: 500; }
+  .more {
+    text-align: center; color: var(--muted); font-size: 12px;
+    padding: 28px 0 8px; font-family: var(--mono);
+  }
+  footer { margin-top: 32px; color: var(--muted); font-size: 11px; font-family: var(--mono); line-height: 1.6; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Artifact Gallery</h1>
+  <p class="sub">Interactive explainers, built as installable PWAs. Open one on your phone to add it to your home screen.</p>
+</header>
+<div class="cards" id="cards"></div>
+<div class="more">more artifacts land as they ship</div>
+<footer>
+  install · Android: ⋮ menu → Install app (or the install prompt) · iOS: Share → Add to Home Screen
+</footer>
+<script id="manifest-holder" type="application/json">
+[
+  { "slug": "traffic-flow-sim", "name": "Traffic Flow Sim", "accent": "#3FD8C4",
+    "desc": "Nagel&ndash;Schreckenberg cellular automaton — why highways jam at moderate density." },
+  { "slug": "test", "name": "Test Page", "accent": "#6B7680",
+    "desc": "Publishing/HTTPS smoke test (infra, not a real artifact)." }
+]
+</script>
+<script>
+  (function () {
+    var items = JSON.parse(document.getElementById("manifest-holder").textContent);
+    var cards = document.getElementById("cards");
+    items.forEach(function (a) {
+      var card = document.createElement("a");
+      card.className = "card";
+      card.href = "artifacts/" + a.slug + "/";
+      card.style.setProperty("--accent", a.accent);
+
+      var tile = document.createElement("div");
+      tile.className = "tile";
+      tile.textContent = a.name.charAt(0).toUpperCase();
+
+      var body = document.createElement("div");
+      body.style.cssText = "min-width:0";
+      var h = document.createElement("h2"); h.textContent = a.name;
+      var d = document.createElement("p"); d.className = "desc"; d.innerHTML = a.desc;
+      var i = document.createElement("p"); i.className = "install";
+      i.innerHTML = "<b>Install:</b> open link &rarr; Android \u22EE &rarr; Install app &middot; iOS Share &rarr; Add to&nbsp;Home&nbsp;Screen";
+
+      body.appendChild(h); body.appendChild(d); body.appendChild(i);
+      card.appendChild(tile); card.appendChild(body);
+      cards.appendChild(card);
+    });
+  })();
+</script>
+<script>if('serviceWorker' in navigator){addEventListener('load',()=>{navigator.serviceWorker.register('./sw.js')})}</script>
+</body>
+</html>
