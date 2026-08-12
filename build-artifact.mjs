@@ -15,7 +15,7 @@
 // in the entry's project dir; sharp (+ the two envelope scripts at artifactory root)
 // when enveloping.
 
-import { execSync } from "node:child_process";
+import { execSync, spawn } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { basename, dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -39,6 +39,7 @@ const title = arg("title", "Interactive Artifact");
 const accent = arg("accent", "");
 const short = arg("short", "");
 const noEnvelope = process.argv.includes("--no-envelope");
+const serveAfter = process.argv.includes("--serve");
 
 if (!noEnvelope && !accent) {
   console.error("[build-artifact] --accent <hex> is required unless --no-envelope (pwa-gallery ticket 07: new artifacts ship enveloped by default)");
@@ -148,3 +149,13 @@ if (!ok) {
   process.exit(1);
 }
 console.log("[build-artifact] structurally verified — exit 0");
+
+// ---- 5. --serve: detached preview server on the artifact dir (ticket 20) ----
+if (serveAfter) {
+  const child = spawn(process.execPath, [join(__dirname, "serve.mjs"), "--dir", dirname(out)], {
+    detached: true,
+    stdio: "ignore",
+  });
+  child.unref();
+  console.log(`[build-artifact] preview server started (pid ${child.pid}): http://127.0.0.1:8770/ — stop with: Stop-Process -Id ${child.pid}`);
+}
