@@ -24,8 +24,8 @@ Every artifact from the artifact-builder pipeline ships phone-supported and inst
 
 ## Not yet specified
 
-- Offline-first depth (full offline vs cache-on-first-visit) - depends on 04 envelope architecture
 - Retrofit process note for artifacts touched later - post-map
+- Offline-first depth: now settled by 06 prototype — precache versioned assets + network-first navigation (see 06 deltas; replaces the open question)
 
 ## Out of scope
 
