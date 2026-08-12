@@ -4,6 +4,17 @@
 
 **Revised 2026-08-10** — original "default artifact template" superseded: festival is now **one preset among N** in the theme library (`10-Projects/11-Active/artifactory/docs/design/themes.md`), a baseline not a house style. Original decision text retained below for history.
 
+## Device support baseline (2026-08-12 — pwa-gallery ticket 05, applies to ALL presets)
+
+Phone support is a **platform contract, not taste** — the PWA envelope (04/06/07) ships artifacts to phones, so every artifact follows this baseline regardless of preset. Locked by grill 2026-08-12; enforced in gate 4 (plan) + gate 5 (impl) + gate 6 (verify, check 6).
+
+1. **Viewport & safe areas.** `viewport` meta includes `viewport-fit=cover`. Any fixed/absolute bottom UI (readout strips, sticky controls) pads with `env(safe-area-inset-bottom)` so the standalone-iOS home indicator never overlaps. No `user-scalable=no` (a11y anti-pattern; ignored since iOS 10). Interactive text elements ≥16px (`font-size`) — kills iOS focus-zoom.
+2. **Tap targets & no-hover.** Interactive targets ≥44px preferred (Apple HIG), **40px hard floor** (dense slider tracks), ≥8px gap between adjacent targets. Every interactive element must be operable without hover — `:active` + `:focus-visible` states required; `@media (prefers-coarse)` may enlarge but never gates function. No hover-only affordances (touch has no hover).
+3. **Layout collapse.** Grids collapse to single column ≤640px; ≥960px may use 2 columns. Recharts containers get explicit `min-height` (220px single, 300px multi-panel) so `ResponsiveContainer` never collapses to 0. Readout strips/control groups wrap (`flex-wrap`) rather than shrink-fight. **Horizontal overflow is a hard FAIL** — `document.scrollWidth <= clientWidth` at 375px.
+4. **Phone perf.** Sim/animation loops cap at 60fps and pause when `document.hidden`; no per-tick layout thrash (batch DOM writes); animations `transform`/`opacity` only (already gate 4). Gate 6 verify adds a **throttled mobile pass**: Playwright `CPU 4x` at 375×667 — render + interaction smoke must pass under throttle.
+
+Cross-references: 06 (envelope prototype — first real-phone validation), 08 (verification gate reuses checks 1/2/4 as the static mobile leg).
+
 ## Revision (2026-08-10) — why the demotion
 
 Gate 4 was restructured by user directive (ticket 12): **no single hardcoded design element**. The festival token block is demoted from "the default template, stamped into every artifact" to a baseline preset, because:
