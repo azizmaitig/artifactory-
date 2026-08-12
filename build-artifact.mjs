@@ -4,17 +4,29 @@
 // shell, then structurally verifies: size >= 1KB, #root present, inline <script>,
 // inline <style>. Exit 0 = structurally verified.
 //
-// Usage: node build-artifact.mjs --entry <entry.jsx> --out <out.html> [--title "<Title>"]
+// PWA envelope (pwa-gallery ticket 07, ON by default): when --accent is given, the
+// final phase runs generate-icons.mjs + envelope.mjs on the artifact dir, producing
+// index.html + manifest.json + sw.js + icons next to the built HTML. Pass --no-envelope
+// to build without an envelope (corpus legacy/rebuilds).
+//
+// Usage: node build-artifact.mjs --entry <entry.jsx> --out <out.html> --title "<Title>" --accent <hex> [--short <ShortName>] [--no-envelope]
 //
 // Env: node + esbuild + react + react-dom + recharts + @tailwindcss/cli installed
-// in the entry's project dir.
+// in the entry's project dir; sharp (+ the two envelope scripts at artifactory root)
+// when enveloping.
 
 import { execSync } from "node:child_process";
-import { mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
-import { dirname, join, resolve } from "node:path";
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { basename, dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
+
+function basenameWithoutExt(p) {
+  const b = basename(p);
+  const i = b.lastIndexOf(".");
+  return i > 0 ? b.slice(0, i) : b;
+}
 
 function arg(name, fallback) {
   const i = process.argv.indexOf(`--${name}`);
@@ -24,6 +36,14 @@ function arg(name, fallback) {
 const entry = resolve(arg("entry", "entry.jsx"));
 const out = resolve(arg("out", "artifact.html"));
 const title = arg("title", "Interactive Artifact");
+const accent = arg("accent", "");
+const short = arg("short", "");
+const noEnvelope = process.argv.includes("--no-envelope");
+
+if (!noEnvelope && !accent) {
+  console.error("[build-artifact] --accent <hex> is required unless --no-envelope (pwa-gallery ticket 07: new artifacts ship enveloped by default)");
+  process.exit(1);
+}
 
 const projectDir = dirname(entry);
 const workDir = join(projectDir, ".artifact-build");
@@ -80,6 +100,23 @@ const html = `<!DOCTYPE html>
 writeFileSync(out, html, "utf8");
 rmSync(workDir, { recursive: true, force: true });
 
+// ---- 3.5 PWA envelope (ticket 07): icons + manifest + sw.js + patched index.html ----
+if (!noEnvelope) {
+  const scriptsDir = __dirname;
+  const artDir = dirname(out);
+  const slug = basenameWithoutExt(out);
+  console.log(`[build-artifact] envelope phase (accent=${accent}, slug=${slug})`);
+  run(`node "${join(scriptsDir, "generate-icons.mjs")}" "${title}" "${accent}" "${artDir}"`);
+  const envArgs = [
+    `--dir "${artDir}"`,
+    `--name ${slug}`,
+    `--accent "${accent}"`,
+    `--title "${title}"`,
+  ];
+  if (short) envArgs.push(`--short "${short}"`);
+  run(`node "${join(scriptsDir, "envelope.mjs")}" ${envArgs.join(" ")}`);
+}
+
 // ---- 4. Structural verification ----
 const size = Buffer.byteLength(html, "utf8");
 const hasRoot = html.includes('id="root"');
@@ -92,6 +129,12 @@ const checks = [
   ["inline <script>", hasInlineScript],
   ["inline <style>", hasInlineStyle],
 ];
+
+if (!noEnvelope) {
+  const envOk = ["index.html", "manifest.json", "sw.js", "icon-192.png", "icon-512.png", "icon-512-maskable.png", "apple-touch-icon.png"]
+    .every((f) => existsSync(join(dirname(out), f)));
+  checks.push(["envelope files present", envOk]);
+}
 
 let ok = true;
 for (const [name, pass] of checks) {
